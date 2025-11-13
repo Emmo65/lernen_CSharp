@@ -1,0 +1,22 @@
+﻿# Ignore build artifacts
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.backup
+*.DS_Store
+
+# Visual Studio Code
+.vscode/
+
+# Other
+*.exe
+*.dll
