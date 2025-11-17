@@ -62,3 +62,13 @@ Das Projekt demonstriert:
 ```bash
 cd 031_BlazorZahlraten
 dotnet run
+Danach im Browser öffnen:
+
+https://localhost:5115
+
+
+Seitenstruktur:
+
+/ – Startseite (Hero, Start-Button)
+
+/game – Zahlraten-Spiel
