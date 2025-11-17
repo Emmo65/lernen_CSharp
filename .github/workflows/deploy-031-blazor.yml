@@ -1,0 +1,47 @@
+name: Deploy 031 BlazorZahlraten to GitHub Pages
+
+on:
+  push:
+    branches:
+      - feature/031-blazor-zahlraten
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish Blazor WASM
+        run: dotnet publish src/031_BlazorZahlraten/031_BlazorZahlraten.csproj -c Release -o release --nologo
+
+      - name: Fix base href for GitHub Pages
+        run: |
+          sed -i 's|<base href="/" />|<base href="/lernen_CSharp/" />|' release/wwwroot/index.html
+
+      - name: Add .nojekyll file
+        run: echo > release/wwwroot/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: release/wwwroot
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
