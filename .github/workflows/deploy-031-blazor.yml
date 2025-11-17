@@ -29,7 +29,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Publish Blazor WASM
-        run: dotnet publish src/031_BlazorZahlraten/031_BlazorZahlraten.csproj -c Release -o release --nologo
+        run: dotnet publish 031_BlazorZahlraten/031_BlazorZahlraten.csproj -c Release -o release --nologo
 
       - name: Fix base href for GitHub Pages
         run: |
