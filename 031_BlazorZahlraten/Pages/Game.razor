@@ -1,0 +1,213 @@
+@page "/game"
+
+<div class="game-page">
+    <div class="game-card">
+        <header class="game-header">
+            <h1 class="game-title">Zahlraten</h1>
+            <p class="game-subtitle">
+                Wähle einen Schwierigkeitsgrad, starte das Spiel und errate die geheime Zahl.
+            </p>
+        </header>
+
+        <section class="game-difficulty">
+            <div class="difficulty-label">Schwierigkeit</div>
+
+            <div class="difficulty-options">
+                <label class="difficulty-pill @(IsDifficultyChecked(Difficulty.Easy) ? "active" : null)">
+                    <input type="radio"
+                           name="difficulty"
+                           @onchange="() => SetDifficulty(Difficulty.Easy)" />
+                    <span>Leicht · 1–50 · 10 Versuche</span>
+                </label>
+
+                <label class="difficulty-pill @(IsDifficultyChecked(Difficulty.Medium) ? "active" : null)">
+                    <input type="radio"
+                           name="difficulty"
+                           @onchange="() => SetDifficulty(Difficulty.Medium)" />
+                    <span>Mittel · 1–100 · 8 Versuche</span>
+                </label>
+
+                <label class="difficulty-pill @(IsDifficultyChecked(Difficulty.Hard) ? "active" : null)">
+                    <input type="radio"
+                           name="difficulty"
+                           @onchange="() => SetDifficulty(Difficulty.Hard)" />
+                    <span>Schwer · 1–200 · 6 Versuche</span>
+                </label>
+            </div>
+        </section>
+
+        <section class="game-controls">
+            <div class="game-input">
+                <label for="guessInput">Dein Tipp</label>
+                <input id="guessInput"
+                       type="number"
+                       @bind="currentGuessText" />
+            </div>
+
+            <div class="game-buttons">
+                <button class="btn btn-success" @onclick="MakeGuess" disabled="@isGameOver">
+                    Tipp abgeben
+                </button>
+
+                <button class="btn btn-secondary" @onclick="StartNewGame">
+                    Neu starten
+                </button>
+            </div>
+        </section>
+
+        <section class="game-status">
+            <div class="game-cheat">
+                <label>
+                    <input type="checkbox" @bind="showSecret" />
+                    Cheat: Geheime Zahl anzeigen
+                </label>
+
+                @if (showSecret)
+                {
+                    <span><strong>Geheime Zahl:</strong> @secretNumber</span>
+                }
+            </div>
+
+            <p><strong>Hinweis:</strong> @message</p>
+            <p><strong>Versuche:</strong> @attempts.Count / @maxAttempts</p>
+
+            <div class="game-progress">
+                <label>Fortschritt</label>
+                <progress value="@attempts.Count" max="@maxAttempts"></progress>
+            </div>
+        </section>
+
+        <section class="game-history">
+            <h5>Bisherige Versuche</h5>
+
+            @if (attempts.Count == 0)
+            {
+                <p>Noch keine Versuche.</p>
+            }
+            else
+            {
+                <ul>
+                    @foreach (var a in attempts)
+                    {
+                        <li>@a</li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
+</div>
+
+@code
+{
+    // "Model"-Teil: Daten für das Spiel
+    enum Difficulty
+    {
+        Easy,
+        Medium,
+        Hard
+    }
+
+    private Difficulty selectedDifficulty = Difficulty.Easy;
+    private int secretNumber;
+    private int maxAttempts;
+    private bool gameStarted = false;
+    private bool isGameOver = false;
+    private string? currentGuessText;
+    private string message = "Noch kein Tipp abgegeben.";
+    private bool showSecret = false;
+    private List<int> attempts = new List<int>();
+    private Random rng = new Random();
+
+    protected override void OnInitialized()
+    {
+        SetDifficulty(Difficulty.Easy);
+        StartNewGame();
+    }
+
+    // "Controller"-Teil: Steuerlogik
+    private void SetDifficulty(Difficulty diff)
+    {
+        selectedDifficulty = diff;
+
+        switch (diff)
+        {
+            case Difficulty.Easy:
+                maxAttempts = 10;
+                break;
+            case Difficulty.Medium:
+                maxAttempts = 8;
+                break;
+            case Difficulty.Hard:
+                maxAttempts = 6;
+                break;
+        }
+    }
+
+    private bool IsDifficultyChecked(Difficulty diff)
+        => selectedDifficulty == diff;
+
+    private void StartNewGame()
+    {
+        int maxValue = selectedDifficulty switch
+        {
+            Difficulty.Easy => 50,
+            Difficulty.Medium => 100,
+            Difficulty.Hard => 200,
+            _ => 100
+        };
+
+        secretNumber = rng.Next(1, maxValue + 1);
+        attempts.Clear();
+        isGameOver = false;
+        gameStarted = true;
+        showSecret = false;
+        currentGuessText = string.Empty;
+        message = $"Ich habe mir eine Zahl zwischen 1 und {maxValue} ausgedacht. Rate sie!";
+    }
+
+    private void MakeGuess()
+    {
+        if (!gameStarted)
+        {
+            message = "Bitte starte zuerst ein neues Spiel.";
+            return;
+        }
+
+        if (isGameOver)
+        {
+            message = "Das Spiel ist vorbei. Starte ein neues Spiel.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentGuessText) || !int.TryParse(currentGuessText, out int guess))
+        {
+            message = "Bitte gib eine gültige Zahl ein.";
+            return;
+        }
+
+        attempts.Add(guess);
+
+        if (guess == secretNumber)
+        {
+            message = $"Richtig! Die Zahl war {secretNumber}. Du hast {attempts.Count} Versuche gebraucht.";
+            isGameOver = true;
+            return;
+        }
+
+        if (attempts.Count >= maxAttempts)
+        {
+            message = $"Keine Versuche mehr! Die Zahl war {secretNumber}.";
+            isGameOver = true;
+            return;
+        }
+
+        if (guess < secretNumber)
+        {
+            message = "Zu niedrig! Versuch eine größere Zahl.";
+        }
+        else
+        {
+            message = "Zu hoch! Versuch eine kleinere Zahl.";
+        }
+    }
+}
