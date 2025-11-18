@@ -7,11 +7,14 @@
 
     <title>031 BlazorZahlraten</title>
 
-    <!-- Bootstrap WEG -->
-    <!-- <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" /> -->
+    <!-- WICHTIG für Blazor-Routing -->
+    <base href="/" />
 
-    <!-- Unsere eigene App-CSS -->
+    <!-- eigenes CSS -->
     <link href="css/app.css" rel="stylesheet" />
+
+    <!-- MudBlazor CSS -->
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
@@ -20,6 +23,10 @@
 <body>
     <div id="app">Lädt…</div>
 
+    <!-- MudBlazor JS (für bestimmte Komponenten nötig) -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <!-- Blazor WebAssembly -->
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

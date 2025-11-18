@@ -847,3 +847,17 @@ button:disabled {
         gap: 0.75rem;
     }
 }
+
+.guess-table {
+    margin-top: 0.5rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.guess-table .mud-table-container {
+    background: rgba(15, 23, 42, 0.85);
+}
+
+.guess-table .mud-table-row:hover {
+    background: rgba(56, 189, 248, 0.12);
+}

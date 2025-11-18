@@ -1,4 +1,5 @@
 @page "/game"
+@using MudBlazor
 
 <div class="game-page">
     <div class="game-card">
@@ -78,20 +79,30 @@
         </section>
 
         <section class="game-history">
-            <h5>Bisherige Versuche</h5>
+            <h5>Versuchshistorie</h5>
 
-            @if (attempts.Count == 0)
+            @if (guessHistory.Count == 0)
             {
                 <p>Noch keine Versuche.</p>
             }
             else
             {
-                <ul>
-                    @foreach (var a in attempts)
-                    {
-                        <li>@a</li>
-                    }
-                </ul>
+                <MudTable Items="guessHistory"
+                          Hover="true"
+                          Dense="true"
+                          Elevation="4"
+                          Class="guess-table">
+                    <HeaderContent>
+                        <MudTh>Nr.</MudTh>
+                        <MudTh>Tipp</MudTh>
+                        <MudTh>Hinweis</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Nr.">@context.Number</MudTd>
+                        <MudTd DataLabel="Tipp">@context.Guess</MudTd>
+                        <MudTd DataLabel="Hinweis">@context.Hint</MudTd>
+                    </RowTemplate>
+                </MudTable>
             }
         </section>
     </div>
@@ -99,7 +110,6 @@
 
 @code
 {
-    // "Model"-Teil: Daten für das Spiel
     enum Difficulty
     {
         Easy,
@@ -115,8 +125,17 @@
     private string? currentGuessText;
     private string message = "Noch kein Tipp abgegeben.";
     private bool showSecret = false;
-    private List<int> attempts = new List<int>();
-    private Random rng = new Random();
+    private List<int> attempts = new();
+    private readonly Random rng = new();
+
+    private List<GuessEntry> guessHistory = new();
+
+    private class GuessEntry
+    {
+        public int Number { get; set; }
+        public int Guess { get; set; }
+        public string Hint { get; set; } = string.Empty;
+    }
 
     protected override void OnInitialized()
     {
@@ -124,7 +143,6 @@
         StartNewGame();
     }
 
-    // "Controller"-Teil: Steuerlogik
     private void SetDifficulty(Difficulty diff)
     {
         selectedDifficulty = diff;
@@ -158,6 +176,7 @@
 
         secretNumber = rng.Next(1, maxValue + 1);
         attempts.Clear();
+        guessHistory.Clear();
         isGameOver = false;
         gameStarted = true;
         showSecret = false;
@@ -187,27 +206,36 @@
 
         attempts.Add(guess);
 
+        string hint;
+
         if (guess == secretNumber)
         {
+            hint = "Richtig!";
             message = $"Richtig! Die Zahl war {secretNumber}. Du hast {attempts.Count} Versuche gebraucht.";
             isGameOver = true;
-            return;
         }
-
-        if (attempts.Count >= maxAttempts)
+        else if (attempts.Count >= maxAttempts)
         {
+            hint = guess < secretNumber ? "Zu niedrig (Game Over)" : "Zu hoch (Game Over)";
             message = $"Keine Versuche mehr! Die Zahl war {secretNumber}.";
             isGameOver = true;
-            return;
         }
-
-        if (guess < secretNumber)
+        else if (guess < secretNumber)
         {
+            hint = "Zu niedrig";
             message = "Zu niedrig! Versuch eine größere Zahl.";
         }
         else
         {
+            hint = "Zu hoch";
             message = "Zu hoch! Versuch eine kleinere Zahl.";
         }
+
+        guessHistory.Add(new GuessEntry
+        {
+            Number = guessHistory.Count + 1,
+            Guess = guess,
+            Hint = hint
+        });
     }
 }
