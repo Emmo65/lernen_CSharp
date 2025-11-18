@@ -2,6 +2,7 @@
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
+@using System.Linq
 @inject IJSRuntime JS
 
 <div class="game-page">
@@ -68,10 +69,10 @@
                     Cheat: Geheime Zahl anzeigen
                 </label>
 
-            @if (showSecret)
-            {
-                <span><strong>Geheime Zahl:</strong> @secretNumber</span>
-            }
+                @if (showSecret)
+                {
+                    <span><strong>Geheime Zahl:</strong> @secretNumber</span>
+                }
             </div>
 
             <p><strong>Hinweis:</strong> @message</p>
@@ -92,7 +93,35 @@
             }
             else
             {
-                <MudTable Items="guessHistory"
+                <div class="history-toolbar">
+                    <span class="history-label">Sortieren nach:</span>
+
+                    <button type="button"
+                            class="@SortClassNumber"
+                            @onclick="SetSortByNumber">
+                        Nr.
+                    </button>
+
+                    <button type="button"
+                            class="@SortClassGuess"
+                            @onclick="SetSortByGuess">
+                        Tipp
+                    </button>
+
+                    <button type="button"
+                            class="@SortClassResult"
+                            @onclick="SetSortByResult">
+                        Ergebnis
+                    </button>
+
+                    <button type="button"
+                            class="history-sort-btn direction"
+                            @onclick="ToggleSortDirection">
+                        Richtung: @SortDirectionSymbol
+                    </button>
+                </div>
+
+                <MudTable Items="SortedGuessHistory"
                           Hover="true"
                           Dense="true"
                           Elevation="10"
@@ -140,6 +169,45 @@
     private readonly Random rng = new();
 
     private readonly List<GuessEntry> guessHistory = new();
+
+    // Sortierung
+    private string sortField = "Number"; // "Number", "Guess", "Result"
+    private bool sortAscending = true;
+
+    private IEnumerable<GuessEntry> SortedGuessHistory
+    {
+        get
+        {
+            IEnumerable<GuessEntry> query = guessHistory;
+
+            return sortField switch
+            {
+                "Guess" => sortAscending
+                    ? query.OrderBy(e => e.Guess)
+                    : query.OrderByDescending(e => e.Guess),
+                "Result" => sortAscending
+                    ? query.OrderBy(e => e.Hint)
+                    : query.OrderByDescending(e => e.Hint),
+                _ => sortAscending
+                    ? query.OrderBy(e => e.Number)
+                    : query.OrderByDescending(e => e.Number)
+            };
+        }
+    }
+
+    private string SortClassNumber => sortField == "Number"
+        ? "history-sort-btn active"
+        : "history-sort-btn";
+
+    private string SortClassGuess => sortField == "Guess"
+        ? "history-sort-btn active"
+        : "history-sort-btn";
+
+    private string SortClassResult => sortField == "Result"
+        ? "history-sort-btn active"
+        : "history-sort-btn";
+
+    private string SortDirectionSymbol => sortAscending ? "↑" : "↓";
 
     private class GuessEntry
     {
@@ -240,7 +308,6 @@
             trend = "★";                    // Volltreffer
             cssClass = "guess-chip-correct";
 
-            // Konfettibombe über das ganze Fenster
             JS.InvokeVoidAsync("launchConfetti");
         }
         else if (attempts.Count >= maxAttempts)
@@ -288,5 +355,29 @@
         });
 
         currentGuessText = string.Empty;
+    }
+
+    // Sortier-Methoden
+    private void SetSortByNumber() => SetSort("Number");
+    private void SetSortByGuess() => SetSort("Guess");
+    private void SetSortByResult() => SetSort("Result");
+
+    private void SetSort(string field)
+    {
+        if (sortField == field)
+        {
+            // erneut klicken -> Richtung umdrehen
+            sortAscending = !sortAscending;
+        }
+        else
+        {
+            sortField = field;
+            sortAscending = true;
+        }
+    }
+
+    private void ToggleSortDirection()
+    {
+        sortAscending = !sortAscending;
     }
 }

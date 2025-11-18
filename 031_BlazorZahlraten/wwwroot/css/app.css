@@ -996,3 +996,51 @@ button:disabled {
             0 0 24px rgba(34, 197, 94, 0.3);
     }
 }
+
+.history-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.history-label {
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+}
+
+.history-sort-btn {
+    border-radius: 9999px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    background: rgba(15, 23, 42, 0.9);
+    color: #e5e7eb;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        transform 0.1s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.history-sort-btn:hover {
+    background: rgba(30, 64, 175, 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.7);
+}
+
+.history-sort-btn.active {
+    border-color: rgba(34, 197, 94, 0.9);
+    box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.7),
+        0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.history-sort-btn.direction {
+    margin-left: auto;
+    font-weight: 600;
+}
