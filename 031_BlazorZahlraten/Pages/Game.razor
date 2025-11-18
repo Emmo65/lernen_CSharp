@@ -1,12 +1,13 @@
 @page "/game"
 @using MudBlazor
+@using Microsoft.AspNetCore.Components.Web
 
 <div class="game-page">
     <div class="game-card">
         <header class="game-header">
             <h1 class="game-title">Zahlraten</h1>
             <p class="game-subtitle">
-                Wähle einen Schwierigkeitsgrad, starte das Spiel und errate die geheime Zahl.
+                Wähle einen Schwierigkeitsgrad, starte das Spiel und versuche die geheime Zahl zu erraten.
             </p>
         </header>
 
@@ -42,7 +43,9 @@
                 <label for="guessInput">Dein Tipp</label>
                 <input id="guessInput"
                        type="number"
-                       @bind="currentGuessText" />
+                       @bind="currentGuessText"
+                       @bind:event="oninput"
+                       @onkeydown="HandleKeyDown" />
             </div>
 
             <div class="game-buttons">
@@ -184,6 +187,15 @@
         message = $"Ich habe mir eine Zahl zwischen 1 und {maxValue} ausgedacht. Rate sie!";
     }
 
+    // ENTER-Taste im Eingabefeld abfangen
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || e.Key == "NumpadEnter")
+        {
+            MakeGuess();
+        }
+    }
+
     private void MakeGuess()
     {
         if (!gameStarted)
@@ -237,5 +249,8 @@
             Guess = guess,
             Hint = hint
         });
+
+        // Eingabefeld nach einem gültigen Tipp leeren
+        currentGuessText = string.Empty;
     }
 }
