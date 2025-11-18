@@ -1,6 +1,8 @@
 @page "/game"
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 
 <div class="game-page">
     <div class="game-card">
@@ -66,10 +68,10 @@
                     Cheat: Geheime Zahl anzeigen
                 </label>
 
-                @if (showSecret)
-                {
-                    <span><strong>Geheime Zahl:</strong> @secretNumber</span>
-                }
+            @if (showSecret)
+            {
+                <span><strong>Geheime Zahl:</strong> @secretNumber</span>
+            }
             </div>
 
             <p><strong>Hinweis:</strong> @message</p>
@@ -93,8 +95,8 @@
                 <MudTable Items="guessHistory"
                           Hover="true"
                           Dense="true"
-                          Elevation="6"
-                          Class="guess-table">
+                          Elevation="10"
+                          Class="guess-table neon-table">
                     <HeaderContent>
                         <MudTh>Nr.</MudTh>
                         <MudTh>Tipp</MudTh>
@@ -235,8 +237,11 @@
             message = $"Richtig! Die Zahl war {secretNumber}. Du hast {attempts.Count} Versuche gebraucht.";
             isGameOver = true;
 
-            trend = "★";                    // Treffer
+            trend = "★";                    // Volltreffer
             cssClass = "guess-chip-correct";
+
+            // Konfettibombe über das ganze Fenster
+            JS.InvokeVoidAsync("launchConfetti");
         }
         else if (attempts.Count >= maxAttempts)
         {

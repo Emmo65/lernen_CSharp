@@ -16,17 +16,42 @@
     <!-- MudBlazor CSS -->
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 
-    <link href="manifest.json" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="stylesheet" href="031_BlazorZahlraten.styles.css" />
+    <link rel="icon" href="favicon.ico" />
 </head>
 
 <body>
     <div id="app">Lädt…</div>
 
-    <!-- MudBlazor JS (für bestimmte Komponenten nötig) -->
+    <!-- Canvas-Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Konfettifunktion für Blazor -->
+    <script>
+        window.launchConfetti = () => {
+            const duration = 1.8 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 45,
+                    spread: 70,
+                    startVelocity: 55,
+                    scalar: 0.9,
+                    origin: { x: Math.random(), y: Math.random() - 0.2 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+        };
+    </script>
+
+    <!-- MudBlazor JS -->
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
-    <!-- Blazor WebAssembly -->
+    <!-- Blazor WebAssembly Bootloader -->
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

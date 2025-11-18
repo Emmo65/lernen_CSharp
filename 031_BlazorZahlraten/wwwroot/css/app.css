@@ -907,3 +907,92 @@ button:disabled {
     background: rgba(59, 130, 246, 0.22);
     color: #bfdbfe;
 }
+
+/* --- Neon-Styling für das Zahlenraten-Grid --- */
+
+.neon-table {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow:
+        0 0 18px rgba(56, 189, 248, 0.35),
+        0 0 40px rgba(129, 140, 248, 0.25);
+}
+
+.guess-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: radial-gradient(circle at top,
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.6));
+}
+
+.guess-pill-icon {
+    font-size: 0.95rem;
+}
+
+/* Grundfarben je nach Ergebnis */
+.guess-chip-correct {
+    color: #bbf7d0;
+    border-color: rgba(34, 197, 94, 0.9);
+    box-shadow:
+        0 0 12px rgba(34, 197, 94, 0.7),
+        0 0 30px rgba(34, 197, 94, 0.45);
+    animation: pulse-correct 1.2s ease-out 2;
+}
+
+.guess-chip-high {
+    color: #fecaca;
+    border-color: rgba(248, 113, 113, 0.85);
+    box-shadow:
+        0 0 14px rgba(248, 113, 113, 0.6),
+        0 0 26px rgba(127, 29, 29, 0.5);
+}
+
+.guess-chip-low {
+    color: #bfdbfe;
+    border-color: rgba(59, 130, 246, 0.85);
+    box-shadow:
+        0 0 14px rgba(59, 130, 246, 0.6),
+        0 0 26px rgba(30, 64, 175, 0.5);
+}
+
+/* Kleine Hover-Animation für alle Pills */
+.guess-pill:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 22px rgba(56, 189, 248, 0.55),
+        0 0 45px rgba(129, 140, 248, 0.45);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Pulsier-Animation für korrekte Tipps */
+@keyframes pulse-correct {
+    0% {
+        transform: scale(1);
+        box-shadow:
+            0 0 10px rgba(34, 197, 94, 0.5),
+            0 0 24px rgba(34, 197, 94, 0.3);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow:
+            0 0 22px rgba(34, 197, 94, 0.9),
+            0 0 38px rgba(34, 197, 94, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 10px rgba(34, 197, 94, 0.5),
+            0 0 24px rgba(34, 197, 94, 0.3);
+    }
+}
