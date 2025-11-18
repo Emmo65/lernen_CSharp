@@ -93,17 +93,23 @@
                 <MudTable Items="guessHistory"
                           Hover="true"
                           Dense="true"
-                          Elevation="4"
+                          Elevation="6"
                           Class="guess-table">
                     <HeaderContent>
                         <MudTh>Nr.</MudTh>
                         <MudTh>Tipp</MudTh>
-                        <MudTh>Hinweis</MudTh>
+                        <MudTh>Ergebnis</MudTh>
                     </HeaderContent>
+
                     <RowTemplate>
                         <MudTd DataLabel="Nr.">@context.Number</MudTd>
                         <MudTd DataLabel="Tipp">@context.Guess</MudTd>
-                        <MudTd DataLabel="Hinweis">@context.Hint</MudTd>
+                        <MudTd DataLabel="Ergebnis">
+                            <span class="guess-pill @context.CssClass">
+                                <span class="guess-pill-icon">@context.Trend</span>
+                                <span>@context.Hint</span>
+                            </span>
+                        </MudTd>
                     </RowTemplate>
                 </MudTable>
             }
@@ -128,16 +134,18 @@
     private string? currentGuessText;
     private string message = "Noch kein Tipp abgegeben.";
     private bool showSecret = false;
-    private List<int> attempts = new();
+    private readonly List<int> attempts = new();
     private readonly Random rng = new();
 
-    private List<GuessEntry> guessHistory = new();
+    private readonly List<GuessEntry> guessHistory = new();
 
     private class GuessEntry
     {
         public int Number { get; set; }
         public int Guess { get; set; }
         public string Hint { get; set; } = string.Empty;
+        public string Trend { get; set; } = string.Empty;    // ⮙, ⮛, ★
+        public string CssClass { get; set; } = string.Empty; // fürs Farb-CSS
     }
 
     protected override void OnInitialized()
@@ -187,7 +195,6 @@
         message = $"Ich habe mir eine Zahl zwischen 1 und {maxValue} ausgedacht. Rate sie!";
     }
 
-    // ENTER-Taste im Eingabefeld abfangen
     private void HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" || e.Key == "NumpadEnter")
@@ -219,16 +226,33 @@
         attempts.Add(guess);
 
         string hint;
+        string trend;
+        string cssClass;
 
         if (guess == secretNumber)
         {
             hint = "Richtig!";
             message = $"Richtig! Die Zahl war {secretNumber}. Du hast {attempts.Count} Versuche gebraucht.";
             isGameOver = true;
+
+            trend = "★";                    // Treffer
+            cssClass = "guess-chip-correct";
         }
         else if (attempts.Count >= maxAttempts)
         {
-            hint = guess < secretNumber ? "Zu niedrig (Game Over)" : "Zu hoch (Game Over)";
+            if (guess < secretNumber)
+            {
+                hint = "Zu niedrig (Game Over)";
+                trend = "⮙";                 // du hättest höher tippen müssen
+                cssClass = "guess-chip-low";
+            }
+            else
+            {
+                hint = "Zu hoch (Game Over)";
+                trend = "⮛";                 // du hättest niedriger tippen müssen
+                cssClass = "guess-chip-high";
+            }
+
             message = $"Keine Versuche mehr! Die Zahl war {secretNumber}.";
             isGameOver = true;
         }
@@ -236,21 +260,28 @@
         {
             hint = "Zu niedrig";
             message = "Zu niedrig! Versuch eine größere Zahl.";
+
+            trend = "⮙";
+            cssClass = "guess-chip-low";
         }
         else
         {
             hint = "Zu hoch";
             message = "Zu hoch! Versuch eine kleinere Zahl.";
+
+            trend = "⮛";
+            cssClass = "guess-chip-high";
         }
 
         guessHistory.Add(new GuessEntry
         {
             Number = guessHistory.Count + 1,
             Guess = guess,
-            Hint = hint
+            Hint = hint,
+            Trend = trend,
+            CssClass = cssClass
         });
 
-        // Eingabefeld nach einem gültigen Tipp leeren
         currentGuessText = string.Empty;
     }
 }

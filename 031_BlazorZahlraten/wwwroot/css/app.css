@@ -861,3 +861,49 @@ button:disabled {
 .guess-table .mud-table-row:hover {
     background: rgba(56, 189, 248, 0.12);
 }
+.guess-table {
+    margin-top: 0.5rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.guess-table .mud-chip {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+.guess-table {
+    margin-top: 0.75rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.guess-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+}
+
+.guess-pill-icon {
+    font-size: 0.9rem;
+}
+
+/* Farben je nach Ergebnis */
+.guess-chip-correct {
+    background: rgba(34, 197, 94, 0.22);
+    color: #bbf7d0;
+}
+
+.guess-chip-high {
+    background: rgba(239, 68, 68, 0.22);
+    color: #fecaca;
+}
+
+.guess-chip-low {
+    background: rgba(59, 130, 246, 0.22);
+    color: #bfdbfe;
+}
